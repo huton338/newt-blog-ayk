@@ -6,8 +6,8 @@ import styles from '@/styles/Layout.module.css'
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
-  title: 'Next.js Blog Example with Newt',
-  description: 'NewtとNext.jsを利用したブログです',
+  title: 'ゆる活あやかブログ',
+  description: 'ゆる活あやかのブログです',
 }
 
 export default function RootLayout({
