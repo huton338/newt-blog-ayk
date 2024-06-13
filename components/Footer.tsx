@@ -22,11 +22,11 @@ export async function Footer() {
         </Link>
         <div className={styles.Link}>
           <a
-            href="https://github.com/Newt-Inc/newt-starter-nextjs-blog"
+            href="https://ayapix.hatenablog.com/"
             rel="noreferrer noopener"
             target="_blank"
           >
-            GitHub
+            LINK
           </a>
         </div>
       </div>
