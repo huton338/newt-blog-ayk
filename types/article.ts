@@ -10,11 +10,34 @@ export interface Article extends Content {
     description?: string
     ogImage?: Media
   }
-  body: string
+  body: BodyContent[]
   coverImage: Media
   author: Author
   tags?: Tag[]
 }
+
+export interface RichText {
+  _id: string
+  type: 'RICH_TEXT'
+  data: string
+}
+
+export interface ArticleImage {
+  _id: string
+  type: 'IMAGE'
+  data: Media
+}
+
+export interface Embed {
+  _id: string
+  type: 'EMBED'
+  data: {
+    html: string
+    url: string
+  }
+}
+
+export type BodyContent = RichText | ArticleImage | Embed
 
 export interface Archive {
   year: number

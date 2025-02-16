@@ -12,6 +12,7 @@ import {
   getNextArticle,
 } from '@/lib/newt'
 import styles from '@/styles/Article.module.css'
+import { RichText , ArticleImage , Embed } from '@/types/article'
 
 type Props = {
   params: {
@@ -32,11 +33,16 @@ export async function generateMetadata({ params }: Props) {
   const article = await getArticle(slug)
 
   const title = article?.meta?.title || article?.title
-  const bodyDescription = htmlToText(article?.body || '', {
+  const richTextBody = article?.body
+    .filter((content) => content.type === 'RICH_TEXT')
+    .map((content) => (content as RichText).data)
+    .join('')
+  const bodyDescription = htmlToText(richTextBody || '', {
     selectors: [{ selector: 'img', format: 'skip' }],
   }).slice(0, 200)
   const description = article?.meta?.description || bodyDescription
   const ogImage = article?.meta?.ogImage?.src
+
 
   return {
     title,
@@ -59,6 +65,39 @@ export default async function Page({ params }: Props) {
 
   const prevArticle = await getPreviousArticle(article)
   const nextArticle = await getNextArticle(article)
+
+  const articleBody = article.body.map((block) => {
+    switch (block.type) {
+      case 'RICH_TEXT':
+        return (
+          <div
+            key={block._id}
+            dangerouslySetInnerHTML={{ __html: (block as RichText).data }}
+          />
+        )
+      case 'IMAGE':
+        const image = (block as ArticleImage).data
+        return (
+          <Image
+            key={block._id}
+            src={image.src}
+            alt={image.altText}
+            width={image.width || undefined}
+            height={image.height || undefined}
+          />
+        )
+      case 'EMBED':
+        const embed = (block as Embed).data
+        return (
+          <div
+            key={block._id}
+            dangerouslySetInnerHTML={{ __html: embed.html }}
+          />
+        )
+      default:
+        return ''
+    }
+  })
 
   return (
     <main className={styles.Container}>
@@ -135,10 +174,9 @@ export default async function Page({ params }: Props) {
             </div>
           </div>
         </div>
-        <div
-          className={styles.Article_Body}
-          dangerouslySetInnerHTML={{ __html: article.body }}
-        ></div>
+        <div className={styles.Article_Body}>
+          {articleBody}
+        </div>
         <div className={styles.SnsShare}>
           <p className={styles.SnsShare_Label}>Share this post</p>
           <ul className={styles.SnsShare_List}>
